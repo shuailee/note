@@ -147,7 +147,7 @@ public static SqlSession getSqlSession(SqlSessionFactory sessionFactory, Executo
 
 （1）先看一个mybatis的配置：
 
-![image-20200424142713746](/img/image-20200424142713746.png)
+![image-20200424142713746](../img/image-20200424142713746.png)
 
 （2）分析 DefaultSqlSessionFactory工厂类创建sqlsession的 sessionFactory.openSession(executorType)方法，最终该方法会调用到openSessionFromDataSource方法中。该方法做了几件事：
 
@@ -181,7 +181,7 @@ public class DefaultSqlSessionFactory implements SqlSessionFactory {
 }
 ```
 
-![image-20200424143755548](/img/image-20200424143755548.png)
+![image-20200424143755548](../img/image-20200424143755548.png)
 
 ​	
 
@@ -189,7 +189,7 @@ public class DefaultSqlSessionFactory implements SqlSessionFactory {
 
 ​	在创建完sqlsession之后会调用**registerSessionHolder**方法，该内部会判断当前是否存在事务（Environment环境变量），如果存在就将sqlSession 绑定到sqlSessionHolder会话保持器中，然后将会话保持器构造成SqlSessionSynchronization对象放进TransactionSynchronizationManager同步事务管理器中的Threadlocal容器中 
 
-![image-20200424162153057](/img/image-20200424162153057.png)
+![image-20200424162153057](../img/image-20200424162153057.png)
 
 ​	**TransactionSynchronizationManager 同步事务管理类**代码内部维护了一个Threadlocal的同步列表：
 

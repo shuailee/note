@@ -1,45 +1,11 @@
 # Mybatis
-
-* [一 MyBatis简介]()    * [1 什么是mybatis，有什么优点？]()
-    * [2 MyBatis 与 Hibernate 有哪些不同？]()
-
-* [二 SqlSession]()    * [1 sqlsession作用域和生命周期]()
-    * [2对象生命周期和依赖注入框架]()
-    * [3 普通 java项目中使用Mybatis]()
-    * [3 Springboot项目中使用Mybatis]()
-
-* [三 Mybatis详解]()    * [1 SQL映射]()
-    * [2. 命名解析]()
-    * [3. 映射器（IUserDao接口）【重要】]()
-    * [4 动态sql]()    * [(1) 多条件查询判断 if]()
-        * [(2) 多条件查询判断连续拼接 if+where]()
-        * [(3) choose when标签,当我们值需要多个条件中的一个时使用]()
-        * [(4) 多字段更新判断 update if]()
-        * [(5) trim 格式化标记]()
-        * [(6) include命令 定义sql片段在别的地方引用，可以增加代码的重用性]()
-        * [(7) foreach 标记]()
-        * [(8) 拼接OR查询条件]()
-        * [(9) in查询]()
-        * [(10) 批量更新：需要在连接字符串中加入 &allowMultiQueries=true 开启批量语句执行]()
-        * [(11) MyBatis模糊查询]()
-        * [(12) 批量插入去重]()
-
-* [四 缓存]()    * [(1) 本地缓存]()    * [本地缓存实现原理：]()
-  
-    * [(2) 二级缓存]()
-
-* [五 Mybatis插件]()
-* [六 字段类型处理器（typeHandlers）]()
-* [七 其他知识点]()    * [1. 语法]()
-    * [2. #{} 和 ${}的区别]()
-    * [3. 结果集映射（数据库字段和实体字段映射）]()    * [4 Mybatis日志]()
-
-* [八 多数据源配置]()
-* [九 Mybatis-Plus]()
+[toc]
 
 #### 一 MyBatis简介
 
-##### 1 什么是mybatis，有什么优点？
+
+
+#####  1 什么是mybatis，有什么优点？
 
 1. MyBatis 是一款优秀的ORM持久层框架，它封装了jdbc，避免了几乎所有的 JDBC 代码和手动设置参数以及获取结果集。开发时只需要关注 SQL 语句本身，不需要花费精力去处理加载驱动、创建连接、创建statement 等繁杂的过程
 2. MyBatis 支持定制化 SQL、存储过程以及高级映射。程序员可以直接编写原生态 sql，可以严格控制 sql 执行性能，灵活度高。
@@ -106,7 +72,7 @@ try {
 }
 ```
 
-![.png](image/.png)
+![.png](../img/.png)
 
 ##### 2对象生命周期和依赖注入框架
 
@@ -742,24 +708,24 @@ Mybatis 使用到了两种缓存：本地缓存（local cache）和二级缓存�
 
 mybatis的Executor模块是执行SQL的执行器，它有3个实现类如图：
 
-![-1.png](image/-1.png)
+![-1.png](../img/-1.png)
 
 1. SimpleExecutor是默认使用的执行器；
 2. ReuseExecutor则是将Statement与SQL建立关联关系缓存起来，这样就不用每次都要重复创建新的Statement；
 3. BatchExecutor则是批量执行器，通过封装底层JDBC的BATCH相关的API，来加速批量相关的操作。
 **而我们关心的本地缓存PerpetualCache则以全局变量存在于BaseExecutor中**
 
-![-2.png](image/-2.png)
+![-2.png](../img/-2.png)
 
 **（1）Executor执行器的创建流程：**
 
-![-3.png](image/-3.png)
+![-3.png](../img/-3.png)
 
 当通过sqlsessionfactory调用opensession方法创建sqlsession的时候，总是会创建Executor执行器，sqlsession随着请求的线程被创建，随着请求结束而消亡，作用域在方法或线程的上下文。在并发场景下会创建多个sqlsession,Executor执行器也最是会被创建；本地缓存在BaseExecutor中，每次也都会被创建新的实例；所以不会存在并发问题；
 
 **（2）查询流程：**
 
-![-4.png](image/-4.png)
+![-4.png](../img/-4.png)
 
 最终会调用BaseExecutor中的query方法，方法中会读取配置文件中的缓存配置来决定是否读取或清空缓存：
 
@@ -833,7 +799,7 @@ private <E> List<E> queryFromDatabase(MappedStatement ms, Object parameter, RowB
 
 **（3）更新流程：**
 
-![-5.png](image/-5.png)
+![-5.png](../img/-5.png)
 
 增删改不同的操作最终到执行器时仅对应到一个update的方法，只要在一个SqlSession声明周期内有执行增删改的任何一种操作，那么与SqlSession关联的所有的一级缓存内容将被清空
 
@@ -851,7 +817,7 @@ public int update(MappedStatement ms, Object parameter) throws SQLException {
 }
 ```
 
-![-6.png](image/-6.png)
+![-6.png](../img/-6.png)
 
 ##### (2) 二级缓存
 
@@ -872,7 +838,7 @@ public int update(MappedStatement ms, Object parameter) throws SQLException {
 </mapper>
 ```
 
-![-7.png](image/-7.png)
+![-7.png](../img/-7.png)
 
   二级缓存在Mybatis是默认关闭，我们通过配置首先启用它。启用它的配置很简单只要在Mapper文件中配置中加入<cache/>即可。
 
@@ -896,7 +862,7 @@ public int update(MappedStatement ms, Object parameter) throws SQLException {
 * SQL语句中的useCache="true"，每次执行这条SQL的时候都会主动的使用缓存，在查询语句中默认值为true,其他情况下为false。
 **缓存使用流程**
 
-![-8.png](image/-8.png)
+![-8.png](../img/-8.png)
 
 #### 五 Mybatis插件
 
@@ -973,7 +939,7 @@ https://github.com/EvanDylan/article/blob/master/mybatis/plugin.md
 
 无论是 MyBatis 在预处理语句（PreparedStatement）中设置一个参数时，还是从结果集中取出一个值时， 都会用类型处理器将获取的值以合适的方式转换成 Java 类型
 
-![-9.png](image/-9.png)
+![-9.png](../img/-9.png)
 
 你可以重写类型处理器或创建你自己的类型处理器来处理不支持的或非标准的类型, 具体做法为：实现 org.apache.ibatis.type.TypeHandler 接口， 或继承一个很便利的类 org.apache.ibatis.type.BaseTypeHandler， 然后可以选择性地将它映射到一个 JDBC 类型。
 
